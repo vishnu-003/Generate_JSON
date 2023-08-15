@@ -21,12 +21,12 @@ with open(schemas_file) as file:
     for i, line in enumerate(file):
         schema_name, table_name = line.strip().split(",")
         output_filename = f"{table_mapping_out}/table-mappings-{schema_name}.json"
-        RULE_ID=2010100 + i
+        
         replacements = {
             "#SCHEMA_NAME#": schema_name,
             "#TABLE_NAME#": table_name,
-            "#RULE_ID#":str(RULE_ID),  # Increment i to get unique rule-id
-            "#RULE_NAME#": str(RULE_ID)  # Increment i to get unique rule-name
+            "#RULE_ID#":str(2010100 + i),  # Increment i to get unique rule-id
+            "#RULE_NAME#": str(2010100 + i)  # Increment i to get unique rule-name
             
         }
         

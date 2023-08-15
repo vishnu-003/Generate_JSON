@@ -3,8 +3,8 @@
     "rule-type": "selection",
     "rule-action": "include",
     "filters": [],
-    "rule-id": "2010105",
-    "rule-name": "2010105",
+    "rule-id": "#RULE_ID#",
+    "rule-name": "#RULE_ID#",
     "object-locator": {
       "schema-name": "#SCHEMA_NAME#",
       "table-name": "#TABLE_NAME#"

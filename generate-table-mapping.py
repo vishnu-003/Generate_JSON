@@ -6,12 +6,11 @@ def replace_placeholders(input_file, output_file, replacements):
     try:
         with open(input_file, 'r') as f:
             content = f.read()
-            modified_content = content
             for placeholder, replacement in replacements.items():
-                modified_content = modified_content.replace(placeholder, replacement)
+             content = content.replace(placeholder, replacement)
 
         with open(output_file, 'w') as f:
-            f.write(modified_content)
+            f.write(content)
       
         print("Replacement successful. Modified content saved to", output_file)
     except Exception as e:

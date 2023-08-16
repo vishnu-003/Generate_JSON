@@ -1,0 +1,7 @@
+sample_schema1,tabe1
+sample_schema2,table2
+sample_schema3,table3
+sample_schema4,table4
+sample_schema5,table5
+sample_schema6,table6
+sample_schema7,table7

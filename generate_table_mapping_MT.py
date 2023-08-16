@@ -52,6 +52,7 @@ for schema_name, table_names in schema_tables.items():
     # # Update the copy with the table names for the current schema
     new_template["rules"] = []
     
+    
     for table_name in table_names:
         new_rule = {
             "rule-type":"selection",
@@ -62,7 +63,7 @@ for schema_name, table_names in schema_tables.items():
             "rule_id": str(201000+i),  # Increment i to get unique rule-id
             "rule_name": str(201000+i)# Increment i with a different value for unique rule-name
         }
-
+    
         
         i=i+1
         new_template["rules"].append(new_rule)

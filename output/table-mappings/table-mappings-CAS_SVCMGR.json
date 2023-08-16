@@ -1,0 +1,94 @@
+{
+    "rule-type": "selection",
+    "rule-action": "include",
+    "filters": [],
+    "rule-id": "#RULE_ID#",
+    "rule-name": "#RULE_NAME#",
+    "object-locator": {
+        "schema-name": "#SCHEMA_NAME#",
+        "table-name": "#TABLE_NAME#"
+    },
+    "rules": [
+        {
+            "rule-type": "selection",
+            "rule-action": "include",
+            "filters": [],
+            "schema": "CAS_SVCMGR",
+            "table": "HILOSEQUENCES",
+            "rule_id": "201008",
+            "rule_name": "201008"
+        },
+        {
+            "rule-type": "selection",
+            "rule-action": "include",
+            "filters": [],
+            "schema": "CAS_SVCMGR",
+            "table": "JBM_COUNTER",
+            "rule_id": "201009",
+            "rule_name": "201009"
+        },
+        {
+            "rule-type": "selection",
+            "rule-action": "include",
+            "filters": [],
+            "schema": "CAS_SVCMGR",
+            "table": "JBM_DUAL",
+            "rule_id": "201010",
+            "rule_name": "201010"
+        },
+        {
+            "rule-type": "selection",
+            "rule-action": "include",
+            "filters": [],
+            "schema": "CAS_SVCMGR",
+            "table": "JBM_ID_CACHE",
+            "rule_id": "201011",
+            "rule_name": "201011"
+        },
+        {
+            "rule-type": "selection",
+            "rule-action": "include",
+            "filters": [],
+            "schema": "CAS_SVCMGR",
+            "table": "JBM_MSG_REF",
+            "rule_id": "201012",
+            "rule_name": "201012"
+        },
+        {
+            "rule-type": "selection",
+            "rule-action": "include",
+            "filters": [],
+            "schema": "CAS_SVCMGR",
+            "table": "JBM_POSTOFFICE",
+            "rule_id": "201013",
+            "rule_name": "201013"
+        },
+        {
+            "rule-type": "selection",
+            "rule-action": "include",
+            "filters": [],
+            "schema": "CAS_SVCMGR",
+            "table": "JBM_ROLE",
+            "rule_id": "201014",
+            "rule_name": "201014"
+        },
+        {
+            "rule-type": "selection",
+            "rule-action": "include",
+            "filters": [],
+            "schema": "CAS_SVCMGR",
+            "table": "JBM_TX_EX",
+            "rule_id": "201015",
+            "rule_name": "201015"
+        },
+        {
+            "rule-type": "selection",
+            "rule-action": "include",
+            "filters": [],
+            "schema": "CAS_SVCMGR",
+            "table": "JBM_USER",
+            "rule_id": "201016",
+            "rule_name": "201016"
+        }
+    ]
+}

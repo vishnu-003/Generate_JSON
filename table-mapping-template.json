@@ -1,12 +1,12 @@
 
 {
     "rule-type": "selection",
-    "rule-action": "include",
     "filters": [],
     "rule-id": "#RULE_ID#",
     "rule-name": "#RULE_NAME#",
     "object-locator": {
       "schema-name": "#SCHEMA_NAME#",
       "table-name": "#TABLE_NAME#"
-    }
+    },
+    "rule-action": "include"
   }

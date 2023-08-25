@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+  <title>AWS DMS Table Mapping JSON Generator</title>
+
+  <meta charset="UTF-8">
+
+  <meta name="description" content="Online AWS DMS Table Mapping JSON Generator">
+
+  <meta name="keywords" content="AWS, DMS, Table Mapping, JSON Generator">
+
+  <meta name="author" content="Bharath Kumar Aleni">
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <!-- <link rel="stylesheet" href="styles.css"> -->
+
+  <style>
+
+ 
+
+.container {
+
+    max-width: 500px;
+
+    margin: 0 auto;
+
+    padding: 50px;
+
+    background-color: #f9f9f9;
+
+    border-radius: 5px;
+
+  }
+
+ 
+
+  h1 {
+
+    text-align: center;
+
+  }
+
+ 
+
+  .form-group {
+
+    margin-bottom: 20px;
+
+  }
+
+ 
+
+  label {
+
+    display: block;
+
+    margin-bottom: 5px;
+
+  }
+
+ 
+
+  input[type="file"] {
+
+    display: block;
+
+    margin-top: 5px;
+
+  }
+
+ 
+
+  button[type="submit"] {
+
+    display: block;
+
+    margin-top: 20px;
+
+    padding: 10px;
+
+    background-color: #4CAF50;
+
+    color: #fff;
+
+    border: none;
+
+    border-radius: 5px;
+
+    cursor: pointer;
+
+    font-size: 16px;
+
+    position: absolute;
+
+    left: 50%;
+
+    transform: translateX(-50%);
+
+  }
+
+ 
+
+  .tmpl_action_btn {
+
+    display: inline;
+
+    width: 200px;
+
+    margin-top: 20px;
+
+    padding: 10px;
+
+    background-color: #1569b7;
+
+    color: #fff;
+
+    border: none;
+
+    border-radius: 5px;
+
+    cursor: pointer;
+
+    font-size: 16px;
+
+    float:right
+
+  }
+
+ 
+
+  .action_btn {
+
+    /* display: block; */
+
+    margin-top: 20px;
+
+    padding: 10px;
+
+    background-color: #4CAF50;
+
+    color: #fff;
+
+    border: none;
+
+    border-radius: 5px;
+
+    cursor: pointer;
+
+    font-size: 16px;
+
+    float:left
+
+  }
+
+ 
+
+  button[type="submit"]:hover {
+
+    background-color: #3e8e41;
+
+  }
+
+  .download-button { float:right }
+
+ 
+
+  .action_btn {
+
+  width: 200px;
+
+  margin: 0 auto;
+
+  display: inline;
+
+  }
+
+ 
+
+ 
+
+  </style>
+
+</head>
+
+<body>
+
+  <div class="container">
+
+    <h1>AWS DMS Table Mapping JSON Generator</h1>
+
+   
+
+    <div class="form-group">
+
+      <form action="upload" method="POST" id="upload-form">
+
+      <textarea id="json-output" name="json-output" rows="30" cols="60"></textarea>
+
+          <span class="template-button">  
+
+            <button align="center" type="submit" class="action_btn">Generate JSON</button>  
+
+          </span>
+
+        </form>
+
+      </div>
+
+      </div>
+
+     
+
+  <script>
+
+    const form = document.getElementById("upload-form");
+
+ 
+
+    var templateMaker = function (object) {
+
+      return function (context) {
+
+          var replacer = function (key, val) {
+
+              if (typeof val === 'function') {
+
+                  return context[val()]
+
+              }
+
+              return val;
+
+          }
+
+          return JSON.parse(JSON.stringify(obj, replacer))
+
+      }
+
+    }
+
+   
+
+ 
+
+    var obj = {
+
+      "rule-type": "selection",
+
+      "rule-id": function () { return 'rule_id' },
+
+      "rule-name": function () { return 'rule_id' },
+
+      "object-locator": {
+
+        "schema-name": function () { return 'schema_name' },
+
+        "table-name": function () { return 'table_name' }
+
+      },
+
+      "rule-action": function () { return 'rule_action' }
+
+    }
+
+ 
+
+    var template = templateMaker(obj);
+
+ 
+
+    const downloadTemplateButton = document.getElementById("download-template-button");
+
+ 
+
+    downloadTemplateButton.addEventListener("click", () => {
+
+      const csvTemplate = "schema_name,table_name,rule_action\nexample-schema,example-table-name,include\nexample-schema,example-table-name-1,exclude";
+
+      const blob = new Blob([csvTemplate], { type: "text/csv;charset=utf-8" });
+
+      const url = URL.createObjectURL(blob);
+
+      const a = document.createElement("a");
+
+      a.href = url;
+
+      a.download = "template.csv";
+
+      document.body.appendChild(a);
+
+      a.click();
+
+      document.body.removeChild(a);
+
+      URL.revokeObjectURL(url);
+
+    });
+
+ 
+
+ 
+
+    form.addEventListener("submit", (e) => {
+
+      e.preventDefault();
+
+ 
+
+      const fileInput = document.getElementById("csv-file");
+
+      const file = fileInput.files[0];
+
+ 
+
+      const reader = new FileReader();
+
+      reader.onload = () => {
+
+        const data = reader.result;
+
+        const lines = data.split("\n");
+
+ 
+
+        const headers = lines[0].split(",");
+
+        const rows = [];
+
+        const rules_outer = {}
+
+ 
+
+        for (let i = 1; i < lines.length; i++) {
+
+          const values = lines[i].split(",");
+
+          const row = {};
+
+ 
+
+          for (let j = 0; j < headers.length; j++) {
+
+            row[headers[j].trim()] = values[j].trim();
+
+          }
+
+          var data_inner = {
+
+              schema_name: row.schema_name,
+
+              table_name: row.table_name,
+
+              rule_action: row.rule_action || "include",
+
+              rule_id: i
+
+          }
+
+          var rendered = template(data_inner);
+
+          // console.log(JSON.stringify(rendered, null, 2));
+
+          rows.push(rendered);
+
+        }
+
+        // console.log(JSON.stringify(rows, null, 2))
+
+        rules_outer["rules"] = rows
+
+        // console.log(JSON.stringify(rules_outer, null, 2))
+
+        const jsonOutput = document.getElementById("json-output");
+
+        jsonOutput.value = JSON.stringify(rules_outer, null, 2);
+
+ 
+
+        const downloadButton = document.getElementById("download-button");
+
+        downloadButton.addEventListener("click", () => {
+
+          const jsonOutput = document.getElementById("json-output");
+
+          const jsonData = jsonOutput.value;
+
+ 
+
+          // Create a Blob from the JSON data
+
+          const blob = new Blob([jsonData], { type: "application/json" });
+
+ 
+
+          // Create a temporary anchor element
+
+          const downloadLink = document.createElement("a");
+
+          downloadLink.href = URL.createObjectURL(blob);
+
+          downloadLink.download = "table-mappings.json"; // Specify the filename for the downloaded file
+
+ 
+
+          // Append the anchor element to the document
+
+          document.body.appendChild(downloadLink);
+
+ 
+
+          // Trigger the click event on the anchor element to initiate the download
+
+          downloadLink.click();
+
+ 
+
+          // Clean up the temporary anchor element
+
+          document.body.removeChild(downloadLink);
+
+        });
+
+      };
+
+ 
+
+      reader.readAsText(file);
+
+    });
+
+ 
+
+  </script>
+
+ 
+
+   <!-- Google tag (gtag.js) -->
+
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-M1WW08RT2R"></script>
+
+  <script>
+
+    window.dataLayer = window.dataLayer || [];
+
+    function gtag(){dataLayer.push(arguments);}
+
+    gtag('js', new Date());
+    gtag('config', 'G-M1WW08RT2R');
+
+  </script>
+
+</body>
+
+</html>

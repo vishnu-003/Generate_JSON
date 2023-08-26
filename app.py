@@ -11,7 +11,7 @@ line_count = 0
 data = {}
 
 def writeJSON(id,filename):
-    op = f'uploads/{id}/table-mappings/{filename.split("-")[1].split(".")[0]}-with-pk.json'
+    op = f'uploads/{id}/table-mappings/table-mappings-{filename.split("-")[1].split(".")[0]}.json'
     os.makedirs(os.path.dirname(op), exist_ok=True)
     with open(op, 'w') as outfile:
         json.dump(data, outfile)

@@ -1,5 +1,5 @@
 from flask import *
-import requests
+import shutil
 import os
 import uuid
 import csv
@@ -11,7 +11,7 @@ line_count = 0
 data = {}
 
 def writeJSON(id,filename):
-    op = f'uploads/{id}/table-mappings/table-mapping-{filename.split("-")[1].split(".")[0]}-with-pk.json'
+    op = f'uploads/{id}/table-mappings/{filename.split("-")[1].split(".")[0]}-with-pk.json'
     os.makedirs(os.path.dirname(op), exist_ok=True)
     with open(op, 'w') as outfile:
         json.dump(data, outfile)
@@ -70,10 +70,11 @@ def split_schema_file(filename,id,output_folder):
             createJSON(split_out_dir+separator+entry, "exclude")
             writeJSON(id, entry)
     print("CSV files created for separate schemas.")
+
 aws_cli_template = "aws-cmd-template"
 validation_template = "validation_template.json"
 
-def replace_placeholder(input_file, output_file, placeholder, replacement):
+def generate_aws_cli_cmds(input_file, output_file, placeholder, replacement):
     try:
         with open(input_file, 'r') as f:
             content = f.read()
@@ -99,40 +100,45 @@ def generate_validation(input_file, output_file, placeholder, replacement):
     except Exception as e:
         print("An error occurred:", e)
 
+def zip_files(output_filename, dir_name):
+    zip_res = shutil.make_archive(output_filename, 'zip', dir_name)
+    print(zip_res)
+    return zip_res
+
 @app.route('/')
-def success():
+def home():
    return render_template('index.html')
 
 @app.route('/upload',methods = ['POST', 'GET'])
 def upload():
-   output_folder = 'uploads'
-   if request.method == 'POST':
-      user = request.form['json-output']
-      user = user.replace("\n","")
-      id = uuid.uuid1()
-      filename = f"{output_folder}/{id}/raw-{id}.txt"
-      os.makedirs(os.path.dirname(filename), exist_ok=True)
-      os.makedirs(os.path.dirname(f'uploads/{id}/aws-cli/{filename.split("-")[1].split(".")[0]}'), exist_ok=True)
-      os.makedirs(os.path.dirname(f'uploads/{id}/table-validations/{filename.split("-")[1].split(".")[0]}'), exist_ok=True)
+    output_folder = 'uploads'
+    if request.method == 'POST':
+        user = request.form['json-output']
+        user = user.replace("\n","")
+        id = uuid.uuid1()
+        filename = f"{output_folder}/{id}/raw-{id}.txt"
+        os.makedirs(os.path.dirname(filename), exist_ok=True)
+        os.makedirs(os.path.dirname(f"uploads/{id}/aws-cli/aws-cli-cmds.sh"), exist_ok=True)
+        os.makedirs(f"./uploads/{id}/validations", exist_ok=True)
 
+        with open(filename, 'w') as f:
+            f.write(user)    
+        split_schema_file(filename,id,output_folder)
 
-      with open(filename, 'w') as f:
-         f.write(user)    
-      split_schema_file(filename,id,output_folder)
+        with open(filename) as file:
+            schema_names=set()
+            for line in file:
+                schema_name = line.split(',')[0]
+                schema_names.add(schema_name)
 
-      with open(filename) as file:
-         schema_names=set()
-         for line in file:
-            schema_name = line.split(',')[0]
-            schema_names.add(schema_name)
+            for schema_name in schema_names:
+                generate_validation(validation_template, f"./uploads/{id}/validations/validations-{schema_name}.json", "#SCHEMA_NAME#", schema_name)
+                generate_aws_cli_cmds(aws_cli_template, f"./uploads/{id}/aws-cli/aws-cli-cmds.sh", "#SCHEMA_NAME#", schema_name)
+        
+        zip_res = zip_files(f"downloads/{id}/{id}-{len(schema_names)}-schemas", f"{output_folder}/{id}")
 
-         for schema_name in schema_names:
-            generate_validation(validation_template, f"./uploads/{id}/table-validations/validations-{schema_name}.json", "#SCHEMA_NAME#", schema_name)
-            replace_placeholder(aws_cli_template, f"./uploads/{id}/aws-cli/aws-cli-cmds.sh", "#SCHEMA_NAME#", schema_name)
+        return send_file(f'downloads/{id}/{os.path.basename(zip_res)}', as_attachment=True)
+        # return render_template('index.html', download_link=True, zip_file_name=f'{id}/{os.path.basename(zip_res)}')
 
-      return redirect(url_for('success'))
-   
 if __name__ == '__main__':
-   app.run(debug = True)
-
-   
+   app.run(debug = True, host="0.0.0.0", port=8080)

@@ -11,7 +11,9 @@ line_count = 0
 data = {}
 
 def writeJSON(id,filename):
+    print(id)
     op = f'uploads/{id}/table-mappings/table-mappings-{filename.split("-")[1].split(".")[0]}.json'
+    print(op)
     os.makedirs(os.path.dirname(op), exist_ok=True)
     with open(op, 'w') as outfile:
         json.dump(data, outfile)
@@ -55,15 +57,17 @@ def split_schema_file(filename,id,output_folder):
             csvwriter.writerow(['Schema', 'Table'])
             csvwriter.writerows([(schema, table) for table in tables])
 
+    generate_table_mappings(id,split_out_dir)
+
+def generate_table_mappings(id,split_out_dir):
     if("/" in split_out_dir):
         separator = "/"
     else:
         separator = "\\"
     listOfFiles = os.listdir(split_out_dir)
     for entry in listOfFiles:
-      #   data = {}
         data['rules'] = []
-        if (entry.startswith("include")):
+        if (entry.startswith("include") or entry.startswith("raw")):
             createJSON(split_out_dir+separator+entry,"include")
             writeJSON(id, entry)
         elif (entry.startswith("exclude")):
@@ -113,20 +117,32 @@ def home():
 def upload():
     output_folder = 'uploads'
     if request.method == 'POST':
-        user = request.form['json-output']
+        try:
+            user = request.form['json-output']
+            json_split = request.form['json_split']
+        except:
+            json_split = "0"
         user = user.replace("\n","")
         user = user.rstrip()
         id = uuid.uuid1()
-        filename = f"{output_folder}/{id}/raw-{id}.txt"
-        os.makedirs(os.path.dirname(filename), exist_ok=True)
+        raw_filename = f"{output_folder}/{id}/raw-{id}.csv"
+        os.makedirs(os.path.dirname(raw_filename), exist_ok=True)
         os.makedirs(os.path.dirname(f"uploads/{id}/aws-cli/aws-cli-cmds.sh"), exist_ok=True)
         os.makedirs(f"./uploads/{id}/validations", exist_ok=True)
+        os.makedirs(f"./uploads/{id}/split_files", exist_ok=True)
 
-        with open(filename, 'w') as f:
-            f.write(user)    
-        split_schema_file(filename,id,output_folder)
-
-        with open(filename) as file:
+        with open(raw_filename, 'w') as f:
+            f.write(user)  
+        if json_split == '1':
+            json_split = True
+            split_schema_file(raw_filename,id,output_folder)
+        else:
+            json_split = False
+            splitfile_dir=f'{output_folder}/{id}/split_files'
+            shutil.copy(raw_filename,splitfile_dir)
+            generate_table_mappings(id,splitfile_dir)
+        
+        with open(raw_filename) as file:
             schema_names=set()
             for line in file:
                 schema_name = line.split(',')[0]

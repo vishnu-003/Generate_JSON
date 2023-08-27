@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="description" content="Online AWS DMS Table Mapping JSON Generator">
     <meta name="keywords" content="AWS, DMS, Table Mapping, JSON Generator">
-    <meta name="author" content="S Vishnu Vardhan">
+    <meta name="author" content="Bharath Kumar Aleni">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <!-- <link rel="stylesheet" href="styles.css"> -->
     <style>
@@ -78,6 +78,10 @@
       margin: 0 auto;
       display: inline;
       }
+      .checkDIV
+{
+    text-align:left;
+}
     </style>
   </head>
   <body>
@@ -86,6 +90,10 @@
       <div class="form-group">
         <form action="upload" method="POST" id="upload-form">
           <textarea id="json-output" name="json-output" rows="30" cols="60" placeholder="schema_name_1,table_name_1&#10;schema_name_2,table_name_2&#10;schema_name_3,table_name_3"></textarea>
+          <div align="center" class="checkDIV">
+          <input  type="checkbox" id="json_split" name="json_split" value="1">
+          <label  for="Json_Split">Json_Split</label><br>
+          </div>
           <span class="template-button">  
           <button align="center" type="submit" class="action_btn">Generate and Download</button>  
           </span>

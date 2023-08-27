@@ -115,6 +115,7 @@ def upload():
     if request.method == 'POST':
         user = request.form['json-output']
         user = user.replace("\n","")
+        user = user.rstrip()
         id = uuid.uuid1()
         filename = f"{output_folder}/{id}/raw-{id}.txt"
         os.makedirs(os.path.dirname(filename), exist_ok=True)

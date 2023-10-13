@@ -1,1 +1,0 @@
-{"rules": [{"rule-type": "selection", "rule-id": "219", "rule-name": "219", "object-locator": {"schema-name": "FVVMGR", "table-name": "FVV_APPL_CONFIG_MZ"}, "rule-action": "include"}]}
